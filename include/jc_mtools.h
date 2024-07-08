@@ -225,7 +225,7 @@ inline std::string &strJustify(std::string &str, size_t length, const char ch, b
 }
 
 // @brief Reverse the string of c.
-// @param size The need reverse part's size, if it is -1 signify string's length.
+// @param size The size of need reverse part, if it is -1 signify string's length.
 inline void strcReverse(char *str, size_t size = -1) {
     if (str == nullptr || (size <= 1 && size != -1))
         return;
