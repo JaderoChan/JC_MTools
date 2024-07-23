@@ -32,6 +32,8 @@
 #define JC_MTOOLS17
 #endif // JC_MTOOLS_CPPVERS >= 201703L
 
+#define JC_MAX_TYPE long long
+
 namespace JcMtools
 {
 
@@ -238,16 +240,17 @@ inline void strcReverse(char *str, size_t size = -1) {
     }
 }
 
-constexpr const size_t BufferSize = 8;
-static char Buffer[BufferSize];
+constexpr const size_t kBufferSize = sizeof(JC_MAX_TYPE);
+static char kBuffer[kBufferSize];
 
 template<typename T>
 T bytes2num(const std::string &bytes, bool isReverse = false) {
-    long long size = sizeof(T);
+    size_t size = sizeof(T);
     T result = T();
+    std::string _bytes = bytes;
     if (isReverse)
-        std::reverse(bytes.begin(), bytes.end());
-    std::memcpy(&result, bytes.data(), size);
+        std::reverse(_bytes.begin(), _bytes.end());
+    std::memcpy(&result, _bytes.data(), size);
     return result;
 }
 
@@ -256,11 +259,11 @@ T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false)
     size_t size = sizeof(T);
     T result = T();
     auto begpos = is.tellg();
-    is.read(Buffer, size);
+    is.read(kBuffer, size);
     size = is.gcount();
     if (isReverse)
-        JcMtools::strcReverse(Buffer, size);
-    std::memcpy(&result, Buffer, size);
+        JcMtools::strcReverse(kBuffer, size);
+    std::memcpy(&result, kBuffer, size);
     if (resumeCursor)
         is.seekg(begpos);
     return result;
@@ -269,19 +272,19 @@ T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false)
 template<typename T>
 std::string num2bytes(T num, bool isReverse = false) {
     size_t size = sizeof(T);
-    std::memcpy(Buffer, &num, size);
+    std::memcpy(kBuffer, &num, size);
     if (isReverse)
-        JcMtools::strcReverse(Buffer, size);
-    return std::string(Buffer, size);
+        JcMtools::strcReverse(kBuffer, size);
+    return std::string(kBuffer, size);
 }
 
 template<typename T>
 void num2bytes(T num, std::ostream &os, bool isReverse = false) {
     size_t size = sizeof(T);
-    std::memcpy(Buffer, &num, size);
+    std::memcpy(kBuffer, &num, size);
     if (isReverse)
-        JcMtools::strcReverse(Buffer, size);
-    os.write(Buffer, size);
+        JcMtools::strcReverse(kBuffer, size);
+    os.write(kBuffer, size);
 }
 
 inline std::ostream &outCharAsBinary(char byte, std::ostream &os = std::cout) {
