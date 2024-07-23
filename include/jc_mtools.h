@@ -18,7 +18,7 @@
 #include <type_traits>
 
 /*
-* The function it name has 'C' suffix signify it don't change the arguments.
+* The function it name has 'C' suffix indicates it don't change the arguments.
 */
 
 // Get the cpp version of current environment.
@@ -26,11 +26,11 @@
 #define JC_MTOOLS_CPPVERS _MSVC_LANG
 #else
 #define JC_MTOOLS_CPPVERS __cpluscplus
-#endif
+#endif // _MSVC_LANG
 
 #if JC_MTOOLS_CPPVERS >= 201703L
 #define JC_MTOOLS17
-#endif
+#endif // JC_MTOOLS_CPPVERS >= 201703L
 
 namespace JcMtools
 {
@@ -54,7 +54,7 @@ void formatLog(T msg, Args... args) {
     else
         formatLog();
 }
-#endif
+#endif // JC_MTOOLS17
 
 // Better than std::pow(x, 2).
 template<typename T>
@@ -112,11 +112,11 @@ inline bool isNumber(const std::string &str) {
 }
 
 // TODO
-inline long double StringToNumber(const std::string &str) {
+inline long double string2number(const std::string &str) {
 
 }
 
-inline std::string toHexstr(char num, bool isUppercase = true, bool justify = true) {
+inline std::string byte2hexstr(char num, bool isUppercase = true, bool justify = true) {
     std::stringstream ss;
     if (isUppercase)
         ss << std::uppercase << std::hex << num;
@@ -129,22 +129,22 @@ inline std::string toHexstr(char num, bool isUppercase = true, bool justify = tr
 }
 
 // TODO
-inline std::string toHexstr(int num, bool isUppercase = true, bool justify = true) {
+inline std::string byte2hexstr(int num, bool isUppercase = true, bool justify = true) {
     return std::string();
 }
 
 // TODO
-inline std::string toHexstr(const std::string &decimalStr, bool isUppercase = true, bool justify = true) {
+inline std::string byte2hexstr(const std::string &decimalStr, bool isUppercase = true, bool justify = true) {
     std::string _hexstr = lowerC(decimalStr);
     return std::string();
 }
 
-inline size_t toDecimal(const std::string &hexStr) {
-    std::string _hexStr = upperC(hexStr);
+inline size_t hexstr2decimal(const std::string &hexstr) {
+    std::string _hexstr = upperC(hexstr);
     size_t decimal = 0;
     int carry = 0;
-    for (auto it = _hexStr.rbegin(); it != _hexStr.rend(); ++it) {
-        if (it == _hexStr.rend() - 1 && *it == '0')
+    for (auto it = _hexstr.rbegin(); it != _hexstr.rend(); ++it) {
+        if (it == _hexstr.rend() - 1 && *it == '0')
             break;
         size_t ch = *it;
         assert((ch >= '0' && ch <= '9') || (ch >= '9' && ch <= 'A') || (ch >= 'A' && ch <= 'F'));
@@ -224,8 +224,8 @@ inline std::string &strJustify(std::string &str, size_t length, const char ch, b
     return str;
 }
 
-// @brief Reverse the string of c.
-// @param size The size of need reverse part, if it is -1 signify string's length.
+// @brief Reverse the string of c style.
+// @param size The size of need reverse part, if it is -1 indicates string's length.
 inline void strcReverse(char *str, size_t size = -1) {
     if (str == nullptr || (size <= 1 && size != -1))
         return;
@@ -242,7 +242,7 @@ constexpr const size_t BufferSize = 8;
 static char Buffer[BufferSize];
 
 template<typename T>
-T bytesToNum(const std::string &bytes, bool isReverse = false) {
+T bytes2num(const std::string &bytes, bool isReverse = false) {
     long long size = sizeof(T);
     T result = T();
     if (isReverse)
@@ -252,7 +252,7 @@ T bytesToNum(const std::string &bytes, bool isReverse = false) {
 }
 
 template<typename T>
-T bytesToNum(std::istream &is, bool isReverse = false, bool resumeCursor = false) {
+T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false) {
     size_t size = sizeof(T);
     T result = T();
     auto begpos = is.tellg();
@@ -267,7 +267,7 @@ T bytesToNum(std::istream &is, bool isReverse = false, bool resumeCursor = false
 }
 
 template<typename T>
-std::string numToBytes(T num, bool isReverse = false) {
+std::string num2bytes(T num, bool isReverse = false) {
     size_t size = sizeof(T);
     std::memcpy(Buffer, &num, size);
     if (isReverse)
@@ -276,7 +276,7 @@ std::string numToBytes(T num, bool isReverse = false) {
 }
 
 template<typename T>
-void numToBytes(T num, std::ostream &os, bool isReverse = false) {
+void num2bytes(T num, std::ostream &os, bool isReverse = false) {
     size_t size = sizeof(T);
     std::memcpy(Buffer, &num, size);
     if (isReverse)
@@ -291,7 +291,7 @@ inline std::ostream &outCharAsBinary(char byte, std::ostream &os = std::cout) {
 
 template<typename T>
 std::ostream &outNumberAsBinary(T number, std::ostream &os = std::cout) {
-    std::string bytes = numToBytes(number, true);
+    std::string bytes = num2bytes(number, true);
     for (auto &var : bytes)
         outCharAsBinary(var, os) << ' ';
     return os << '\n';
@@ -304,7 +304,7 @@ inline std::string getCharAsBinary(char byte) {
 
 template<typename T>
 std::string getNumberAsBinary(T number) {
-    std::string bytes = numToBytes(number, true);
+    std::string bytes = num2bytes(number, true);
     std::stringstream ss;
     for (auto &var : bytes)
         ss << getCharAsBinary(var) << ' ';
@@ -567,9 +567,9 @@ struct Rgb
         r(r), g(g), b(b), a(alpha) {};
     std::string getHexstr(bool isUppercase = true) {
         std::string str;
-        str = toHexstr(r, isUppercase) +
-            toHexstr(g, isUppercase) +
-            toHexstr(b, isUppercase);
+        str = byte2hexstr(r, isUppercase) +
+            byte2hexstr(g, isUppercase) +
+            byte2hexstr(b, isUppercase);
         return str;
     }
 
@@ -599,11 +599,11 @@ inline Rgb getRgbFromHexstr(const std::string &hexstr) {
     return Rgb(rgb[0], rgb[1], rgb[2]);
 }
 
-inline std::string rgbToHexstr(const Rgb &rgb, bool isUppercase = true) {
+inline std::string rgb2hexstr(const Rgb &rgb, bool isUppercase = true) {
     std::string str;
-    str = toHexstr(rgb.r, isUppercase) +
-        toHexstr(rgb.g, isUppercase) +
-        toHexstr(rgb.b, isUppercase);
+    str = byte2hexstr(rgb.r, isUppercase) +
+        byte2hexstr(rgb.g, isUppercase) +
+        byte2hexstr(rgb.b, isUppercase);
     return str;
 }
 
