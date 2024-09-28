@@ -6,13 +6,12 @@
 #include <cmath>
 #include <cstring>      // strlen(), memcpy()
 #include <cstdlib>      // size_t
-
 #include <string>
 #include <sstream>      // stringstream
 #include <iostream>     // cerr
 #include <random>
 #include <exception>
-#include <algorithm> // reverse()
+#include <algorithm>    // reverse()
 // C++11
 #include <bitset>
 #include <type_traits>
@@ -136,7 +135,9 @@ inline std::string byte2hexstr(int num, bool isUppercase = true, bool justify = 
 }
 
 // TODO
-inline std::string byte2hexstr(const std::string &decimalStr, bool isUppercase = true, bool justify = true) {
+inline std::string byte2hexstr(const std::string &decimalStr,
+                               bool isUppercase = true,
+                               bool justify = true) {
     std::string _hexstr = lowerC(decimalStr);
     return std::string();
 }
@@ -150,12 +151,14 @@ inline size_t hexstr2decimal(const std::string &hexstr) {
             break;
         size_t ch = *it;
         assert((ch >= '0' && ch <= '9') || (ch >= '9' && ch <= 'A') || (ch >= 'A' && ch <= 'F'));
-        decimal += ((ch >= '0' && ch <= '9') ? ch - '0' : ch - 'A' + 10) * static_cast<size_t>(std::pow(16, carry++));
+        decimal += ((ch >= '0' && ch <= '9') ? ch - '0' : ch - 'A' + 10) *
+            static_cast<size_t>(std::pow(16, carry++));
     }
     return decimal;
 }
 
-inline std::string strReplaceC(const std::string &str, const std::string &from, const std::string &to,
+inline std::string strReplaceC(const std::string &str,
+                               const std::string &from, const std::string &to,
                                int count = -1, bool isCaseSensitive = true) {
     size_t pos = 0;
     std::string _str = str;
@@ -172,7 +175,8 @@ inline std::string strReplaceC(const std::string &str, const std::string &from, 
     return _str;
 }
 
-inline std::string &strReplace(std::string &str, const std::string &from, const std::string &to,
+inline std::string &strReplace(std::string &str,
+                               const std::string &from, const std::string &to,
                                int count = -1, bool isCaseSensitive = true) {
     size_t pos = 0;
     while (count-- != 0) {
@@ -188,22 +192,18 @@ inline std::string &strReplace(std::string &str, const std::string &from, const 
     return str;
 }
 
-inline std::vector<std::string> strSplit(const std::string &str, const char ch, size_t off = 0) {
-    size_t pos1 = off;
-    size_t pos2 = str.find(ch, pos1);
-    std::vector<std::string> result;
-    while (pos2 != std::string::npos) {
-        result.push_back(str.substr(pos1, pos2 - pos1));
-        if (pos2 == str.size() - 1)
-            return result;
-        pos1 = pos2 + 1;
-        pos2 = str.find(ch, pos1);
+inline std::vector<std::string> strSplit(const std::string &str, const char ch) {
+    std::istringstream iss(str);
+    std::vector<std::string> rslt;
+    std::string part;
+    while (std::getline(iss, part, ch)) {
+        rslt.push_back(part);
     }
-    result.push_back(str.substr(pos1, str.size() - pos1));
-    return result;
+    return rslt;
 }
 
-inline std::string strJustifyC(const std::string &str, size_t length, const char ch, bool isLeftJustify = true) {
+inline std::string strJustifyC(const std::string &str, size_t length,
+                               const char ch, bool isLeftJustify = true) {
     std::string _str = str;
     size_t diff = length - _str.size();
     if (diff <= 0)
@@ -215,7 +215,8 @@ inline std::string strJustifyC(const std::string &str, size_t length, const char
     return _str;
 }
 
-inline std::string &strJustify(std::string &str, size_t length, const char ch, bool isLeftJustify = true) {
+inline std::string &strJustify(std::string &str, size_t length,
+                               const char ch, bool isLeftJustify = true) {
     size_t diff = length - str.size();
     if (diff <= 0)
         return str;
@@ -246,27 +247,27 @@ static char kBuffer[kBufferSize];
 template<typename T>
 T bytes2num(const std::string &bytes, bool isReverse = false) {
     size_t size = sizeof(T);
-    T result = T();
+    T rslt = T();
     std::string _bytes = bytes;
     if (isReverse)
         std::reverse(_bytes.begin(), _bytes.end());
-    std::memcpy(&result, _bytes.data(), size);
-    return result;
+    std::memcpy(&rslt, _bytes.data(), size);
+    return rslt;
 }
 
 template<typename T>
 T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false) {
     size_t size = sizeof(T);
-    T result = T();
+    T rslt = T();
     auto begpos = is.tellg();
     is.read(kBuffer, size);
     size = is.gcount();
     if (isReverse)
         JcMtools::strcReverse(kBuffer, size);
-    std::memcpy(&result, kBuffer, size);
+    std::memcpy(&rslt, kBuffer, size);
     if (resumeCursor)
         is.seekg(begpos);
-    return result;
+    return rslt;
 }
 
 template<typename T>
@@ -392,28 +393,36 @@ inline bool isBigEndian() {
 class ProgressBar
 {
 public:
-    explicit ProgressBar(int barWidth = 70) : barWidth_(barWidth) {};
+    explicit ProgressBar(int barWidth = 70) : barWidth_(barWidth) {}
+
     void setWidth(int width) {
         barWidth_ = width;
     }
+
     void setTitle(const std::string &title) {
         title_ = title;
     }
+
     void setLeftBorder(const std::string &border) {
         leftBorder_ = border;
     }
+
     void setRightBorder(const std::string &border) {
         rightBorder_ = border;
     }
+
     void setFillCh(const char ch) {
         fillCh_ = ch;
     }
+
     void setCurCh(const char ch) {
         curCh_ = ch;
     }
+
     void setBlankCh(const char ch) {
         blankCh_ = ch;
     }
+
     void update(int curpos, int endpos) const {
         double percentage = static_cast<double>(curpos) / endpos;
         int pos = static_cast<int>(barWidth_ * percentage);
@@ -440,7 +449,8 @@ private:
 class Elapsed
 {
 public:
-    explicit Elapsed(bool isSec = false) : isSec_(isSec), start_(clock()), pre_(start_), end_(start_) {};
+    explicit Elapsed(bool isSec = false) :
+        isSec_(isSec), start_(clock()), pre_(start_), end_(start_) {};
     void start() {
         start_ = clock();
         pre_ = start_;
@@ -481,39 +491,46 @@ private:
 template<typename T>
 struct Pos
 {
-    Pos() : x(T()), y(T()), z(T()) {};
+    Pos() : x(T()), y(T()), z(T()) {}
+
     Pos(T x, T y, T z) :
-        x(x), y(y), z(z) {};
+        x(x), y(y), z(z) {}
+
     bool isNeighbour(const Pos &other, double range = 1.0) const {
         return square(x - other.x) +
             square(y - other.y) +
             square(z - other.z) <=
             square(range);
     }
+
     Pos &operator+=(const T &value) {
         x += value;
         y += value;
         z += value;
         return *this;
     }
+
     Pos &operator+=(const Pos &other) {
         x += other.x;
         y += other.y;
         z += other.z;
         return *this;
     }
+
     Pos &operator-=(const T &value) {
         x -= value;
         y -= value;
         z -= value;
         return *this;
     }
+
     Pos &operator-=(const Pos &other) {
         x -= other.x;
         y -= other.y;
         z -= other.z;
         return *this;
     }
+
     Pos operator+(const T &value) const {
         Pos pos;
         pos.x = x + value;
@@ -521,6 +538,7 @@ struct Pos
         pos.z = z + value;
         return pos;
     }
+
     Pos operator+(const Pos &other) const {
         Pos pos;
         pos.x = x + other.x;
@@ -528,6 +546,7 @@ struct Pos
         pos.z = z + other.z;
         return pos;
     }
+
     Pos operator-(const T &value) const {
         Pos pos;
         pos.x = x - value;
@@ -535,6 +554,7 @@ struct Pos
         pos.z = z - value;
         return pos;
     }
+
     Pos operator-(const Pos &other) const {
         Pos pos;
         pos.x = x - other.x;
@@ -547,6 +567,7 @@ struct Pos
     T y;
     T z;
 };
+
 using Posc = Pos<char>;
 using Poss = Pos<short>;
 using Posi = Pos<int>;
@@ -565,9 +586,11 @@ std::ostream &operator<<(std::ostream &os, const Pos<T> &pos) {
 
 struct Rgb
 {
-    Rgb() : r(0), g(0), b(0), a(0) {};
+    Rgb() : r(0), g(0), b(0), a(0) {}
+
     Rgb(unsigned char r, unsigned char g, unsigned char b, unsigned char alpha = 0) :
-        r(r), g(g), b(b), a(alpha) {};
+        r(r), g(g), b(b), a(alpha) {}
+
     std::string getHexstr(bool isUppercase = true) {
         std::string str;
         str = byte2hexstr(r, isUppercase) +
@@ -622,12 +645,15 @@ inline double rgbSimilarity(const Rgb &a, const Rgb &b) {
 
 struct Version
 {
-    Version() : major(0), minor(0), patch(0) {};
+    Version() : major(0), minor(0), patch(0) {}
+
     Version(unsigned char major, unsigned char minor, unsigned char patch) :
-        major(major), minor(minor), patch(patch) {};
-    inline int data() const {
+        major(major), minor(minor), patch(patch) {}
+
+    int data() const {
         return (major << 24) ^ (minor << 16) ^ patch;
     }
+
     unsigned char major;
     unsigned char minor;
     unsigned char patch;
