@@ -23,8 +23,8 @@
 namespace JcMtools
 {
 
-void formatLog() {
-    std::cerr << '\n';
+inline void formatLog() {
+    std::cerr << std::endl;
 }
 
 template <typename T, typename... Args>
