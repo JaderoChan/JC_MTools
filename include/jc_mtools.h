@@ -236,7 +236,7 @@ T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false)
     size_t size = sizeof(T);
     T rslt = T();
     auto begpos = is.tellg();
-    static char buffer[sizeof(T)];
+    static char buffer[sizeof(T)] {};
     is.read(buffer, size);
     size = is.gcount();
     if (isReverse)
@@ -250,7 +250,7 @@ T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false)
 template<typename T>
 std::string num2bytes(T num, bool isReverse = false) {
     size_t size = sizeof(T);
-    static char buffer[sizeof(T)];
+    static char buffer[sizeof(T)] {};
     std::memcpy(buffer, &num, size);
     if (isReverse)
         JcMtools::strcReverse(buffer, size);
@@ -260,7 +260,7 @@ std::string num2bytes(T num, bool isReverse = false) {
 template<typename T>
 void num2bytes(T num, std::ostream &os, bool isReverse = false) {
     size_t size = sizeof(T);
-    static char buffer[sizeof(T)];
+    static char buffer[sizeof(T)] {};
     std::memcpy(buffer, &num, size);
     if (isReverse)
         JcMtools::strcReverse(buffer, size);
