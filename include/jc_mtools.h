@@ -20,29 +20,9 @@
 * The function it name has 'C' suffix indicates it don't change the arguments.
 */
 
-// Get the cpp version of current environment.
-#ifdef _MSVC_LANG
-#define JC_MTOOLS_CPPVERS _MSVC_LANG
-#else
-#define JC_MTOOLS_CPPVERS __cpluscplus
-#endif // _MSVC_LANG
-
-#if JC_MTOOLS_CPPVERS >= 201703L
-#define JC_MTOOLS17
-#endif // JC_MTOOLS_CPPVERS >= 201703L
-
-#define JC_MAX_TYPE long long
-
 namespace JcMtools
 {
 
-#ifdef JC_MTOOLS17
-template <typename... Args>
-void formatLog(Args... args) {
-    (std::cerr << ... << (std::cerr << args, " "));
-    std::cerr << '\n';
-}
-#else
 void formatLog() {
     std::cerr << '\n';
 }
@@ -55,7 +35,6 @@ void formatLog(T msg, Args... args) {
     else
         formatLog();
 }
-#endif // JC_MTOOLS17
 
 // Better than std::pow(x, 2).
 template<typename T>
@@ -241,9 +220,6 @@ inline void strcReverse(char *str, size_t size = -1) {
     }
 }
 
-constexpr const size_t kBufferSize = sizeof(JC_MAX_TYPE);
-static char kBuffer[kBufferSize];
-
 template<typename T>
 T bytes2num(const std::string &bytes, bool isReverse = false) {
     size_t size = sizeof(T);
@@ -260,11 +236,12 @@ T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false)
     size_t size = sizeof(T);
     T rslt = T();
     auto begpos = is.tellg();
-    is.read(kBuffer, size);
+    static char buffer[sizeof(T)];
+    is.read(buffer, size);
     size = is.gcount();
     if (isReverse)
-        JcMtools::strcReverse(kBuffer, size);
-    std::memcpy(&rslt, kBuffer, size);
+        JcMtools::strcReverse(buffer, size);
+    std::memcpy(&rslt, buffer, size);
     if (resumeCursor)
         is.seekg(begpos);
     return rslt;
@@ -273,19 +250,21 @@ T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false)
 template<typename T>
 std::string num2bytes(T num, bool isReverse = false) {
     size_t size = sizeof(T);
-    std::memcpy(kBuffer, &num, size);
+    static char buffer[sizeof(T)];
+    std::memcpy(buffer, &num, size);
     if (isReverse)
-        JcMtools::strcReverse(kBuffer, size);
-    return std::string(kBuffer, size);
+        JcMtools::strcReverse(buffer, size);
+    return std::string(buffer, size);
 }
 
 template<typename T>
 void num2bytes(T num, std::ostream &os, bool isReverse = false) {
     size_t size = sizeof(T);
-    std::memcpy(kBuffer, &num, size);
+    static char buffer[sizeof(T)];
+    std::memcpy(buffer, &num, size);
     if (isReverse)
-        JcMtools::strcReverse(kBuffer, size);
-    os.write(kBuffer, size);
+        JcMtools::strcReverse(buffer, size);
+    os.write(buffer, size);
 }
 
 inline std::ostream &outCharAsBinary(char byte, std::ostream &os = std::cout) {
