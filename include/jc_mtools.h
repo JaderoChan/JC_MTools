@@ -20,7 +20,7 @@
 * The function it name has 'C' suffix indicates it don't change the arguments.
 */
 
-namespace JcMtools
+namespace jcmtools
 {
 
 inline void formatLog() {
@@ -240,7 +240,7 @@ T bytes2num(std::istream &is, bool isReverse = false, bool resumeCursor = false)
     is.read(buffer, size);
     size = is.gcount();
     if (isReverse)
-        JcMtools::strcReverse(buffer, size);
+        strcReverse(buffer, size);
     std::memcpy(&rslt, buffer, size);
     if (resumeCursor)
         is.seekg(begpos);
@@ -253,7 +253,7 @@ std::string num2bytes(T num, bool isReverse = false) {
     static char buffer[sizeof(T)] {};
     std::memcpy(buffer, &num, size);
     if (isReverse)
-        JcMtools::strcReverse(buffer, size);
+        strcReverse(buffer, size);
     return std::string(buffer, size);
 }
 
@@ -263,7 +263,7 @@ void num2bytes(T num, std::ostream &os, bool isReverse = false) {
     static char buffer[sizeof(T)] {};
     std::memcpy(buffer, &num, size);
     if (isReverse)
-        JcMtools::strcReverse(buffer, size);
+        strcReverse(buffer, size);
     os.write(buffer, size);
 }
 
@@ -437,17 +437,17 @@ public:
     void get() {
         end_ = clock();
         if (isSec_)
-            JcMtools::formatLog(hintPart_, (end_ - pre_) / CLOCKS_PER_SEC, "Sec");
+            formatLog(hintPart_, (end_ - pre_) / CLOCKS_PER_SEC, "Sec");
         else
-            JcMtools::formatLog(hintPart_, (end_ - pre_), "MSec");
+            formatLog(hintPart_, (end_ - pre_), "MSec");
         pre_ = end_;
     }
     void end() {
         end_ = clock();
         if (isSec_)
-            JcMtools::formatLog(hintAll_, (end_ - start_) / CLOCKS_PER_SEC, "Sec");
+            formatLog(hintAll_, (end_ - start_) / CLOCKS_PER_SEC, "Sec");
         else
-            JcMtools::formatLog(hintAll_, (end_ - start_), "MSec");
+            formatLog(hintAll_, (end_ - start_), "MSec");
         pre_ = end_;
     }
     void setSec(bool isSec) {
@@ -679,9 +679,9 @@ static bool operator<=(const Version &lhs, const Version &rhs) {
 
 namespace std
 {
-template<> struct hash<JcMtools::Rgb>
+template<> struct hash<jcmtools::Rgb>
 {
-    size_t operator()(const JcMtools::Rgb &rgb) const {
+    size_t operator()(const jcmtools::Rgb &rgb) const {
         size_t h1 = std::hash<unsigned char>()(rgb.r);
         size_t h2 = std::hash<unsigned char>()(rgb.g);
         size_t h3 = std::hash<unsigned char>()(rgb.b);
@@ -689,9 +689,9 @@ template<> struct hash<JcMtools::Rgb>
     }
 };
 
-template<> struct hash<JcMtools::Version>
+template<> struct hash<jcmtools::Version>
 {
-    size_t operator()(const JcMtools::Version &version) const {
+    size_t operator()(const jcmtools::Version &version) const {
         return version.data();
     }
 };
